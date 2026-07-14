@@ -276,19 +276,38 @@ export default function HUD() {
       </div>
 
       <button className="mute-btn" onClick={toggleMute} title={muted ? 'unmute' : 'mute'}>
-        {muted ? '🔇' : '🔊'}
+        {muted ? (
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 5L6.5 9H3v6h3.5L11 19V5Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M16 9.5l5 5M21 9.5l-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11 5L6.5 9H3v6h3.5L11 19V5Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M15.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <path d="M18.2 6a9 9 0 0 1 0 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        )}
       </button>
-      <button className="lang-btn" onClick={switchLang} title="language">
-        {LANG === 'it' ? 'EN' : 'IT'}
+      <button className="lang-toggle" onClick={switchLang} title="language" aria-label="switch language">
+        <span className={LANG === 'it' ? 'lt-opt active' : 'lt-opt'}>IT</span>
+        <span className={LANG === 'en' ? 'lt-opt active' : 'lt-opt'}>EN</span>
+        <span className="lt-knob" style={{ left: LANG === 'it' ? 2 : 36 }} />
       </button>
       <button className="diary-btn" onClick={() => setDiaryOpen(!diaryOpen)} title="olfactory diary">
-        📔 <span className="diary-count">{st.collected.length}/{NOTES.length}</span>
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 5.5C10.5 4.2 8.4 3.5 6 3.5H3.5v14H6c2.4 0 4.5.7 6 2 1.5-1.3 3.6-2 6-2h2.5v-14H18c-2.4 0-4.5.7-6 2Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M12 5.5v14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M6.5 8.5c1.4.1 2.7.5 3.5 1M6.5 12c1.4.1 2.7.5 3.5 1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        </svg>
+        <span className="diary-count">{st.collected.length}/{NOTES.length}</span>
       </button>
+      {/* wardrobe button disabled until the new character's outfit looks are remade
       {unlockedLooks() > 0 && (
         <button className="look-btn" onClick={cycleLook} title="wardrobe">
           👗 <span className="diary-count">{STR.ui.looks[st.look]}</span>
         </button>
-      )}
+      )} */}
 
       {/* pickup toast */}
       {st.toast && <div className="toast">{st.toast}</div>}

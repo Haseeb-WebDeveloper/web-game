@@ -1,13 +1,39 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useQuest, startDive, introProgress } from './questStore.js'
 import { initAudioOnGesture } from './audio.js'
 import { STR } from './i18n.js'
 
-// The landing page: scroll to spin the planet until the rooftops
-// spell ROMA, then press the perfume pump to dive in.
+// The landing page: scroll to spin the planet closer, then press the
+// perfume pump to dive in.
 export default function IntroOverlay() {
   const st = useQuest()
   const [p, setP] = useState(0)
+  const scrollRef = useRef(null)
+  const inScroll = st.intro === 'scroll'
+
+  // Keyboard must work BEFORE the user ever clicks: focus the scroll layer on
+  // mount, and drive it directly from a window-level key handler so arrows /
+  // PageDown / Space scroll the intro no matter what has focus.
+  useEffect(() => {
+    if (!inScroll) return
+    const el = scrollRef.current
+    if (el) el.focus({ preventScroll: true })
+    const onKey = (e) => {
+      const sc = scrollRef.current
+      if (!sc) return
+      const steps = {
+        ArrowDown: 140, KeyS: 140, PageDown: 420, Space: 420,
+        ArrowUp: -140, KeyW: -140, PageUp: -420,
+      }
+      const d = steps[e.code]
+      if (d === undefined) return
+      e.preventDefault()
+      sc.scrollBy({ top: d, behavior: 'smooth' })
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [inScroll])
+
   if (!st.intro) return null
 
   const onScroll = (e) => {
@@ -21,7 +47,7 @@ export default function IntroOverlay() {
   return (
     <>
       {st.intro === 'scroll' && (
-        <div className="intro-scroll" onScroll={onScroll}>
+        <div className="intro-scroll" onScroll={onScroll} ref={scrollRef} tabIndex={-1}>
           <div className="intro-track" />
           <div className="intro-fixed">
             <div className="intro-title">{STR.ui.introTitle}</div>
