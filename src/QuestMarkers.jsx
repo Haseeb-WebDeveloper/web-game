@@ -1,26 +1,55 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useQuest, activeBeacons } from './questStore.js'
 
-// The beam floats ABOVE head height so its translucent glow never washes
-// over the NPC standing at the target — it points at them, not through them.
-const BEAM_BOTTOM = 2 
+// A shaft of light POINTING DOWN at the spot: narrow high up, widening to a
+// pool of light on the ground — like a sunbeam landing exactly where to go.
+// Additive blending brightens whatever it touches instead of tinting it.
 const BEAM_TOP = 13
-const BEAM_HEIGHT = BEAM_TOP - BEAM_BOTTOM
+
+// soft radial gradient for the ground pool, generated once
+const POOL_TEX = (() => {
+  const c = document.createElement('canvas')
+  c.width = c.height = 128
+  const g = c.getContext('2d')
+  const grad = g.createRadialGradient(64, 64, 6, 64, 64, 64)
+  grad.addColorStop(0, 'rgba(255,255,255,0.9)')
+  grad.addColorStop(0.55, 'rgba(255,255,255,0.32)')
+  grad.addColorStop(1, 'rgba(255,255,255,0)')
+  g.fillStyle = grad
+  g.fillRect(0, 0, 128, 128)
+  return new THREE.CanvasTexture(c)
+})()
 
 function Beacon({ pos }) {
   const diamond = useRef()
-  const up = pos.clone().normalize()
-  const groundR = pos.length()
-  const beamPos = up.clone().multiplyScalar(groundR + BEAM_BOTTOM + BEAM_HEIGHT / 2)
-  const beamQuat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), up)
+  const pool = useRef()
+  const { up, groundR, beamPos, beamQuat, poolPos, poolQuat } = useMemo(() => {
+    const up = pos.clone().normalize()
+    const groundR = pos.length()
+    return {
+      up,
+      groundR,
+      // cone base sits just above the walk surface, apex far overhead
+      beamPos: up.clone().multiplyScalar(groundR - 0.3 + BEAM_TOP / 2),
+      beamQuat: new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), up),
+      poolPos: up.clone().multiplyScalar(groundR - 0.28),
+      poolQuat: new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), up),
+    }
+  }, [pos])
 
   useFrame(({ clock }) => {
-    if (!diamond.current) return
-    const bob = Math.sin(clock.elapsedTime * 2.5) * 0.3
-    diamond.current.position.copy(up.clone().multiplyScalar(groundR + 4.5 + bob))
-    diamond.current.rotation.y = clock.elapsedTime * 1.5
+    const t = clock.elapsedTime
+    if (diamond.current) {
+      const bob = Math.sin(t * 2.5) * 0.3
+      diamond.current.position.copy(up.clone().multiplyScalar(groundR + 4.5 + bob))
+      diamond.current.rotation.y = t * 1.5
+    }
+    if (pool.current) {
+      const pulse = 1 + Math.sin(t * 2.5) * 0.12
+      pool.current.scale.setScalar(pulse)
+    }
   })
 
   return (
@@ -29,9 +58,21 @@ function Beacon({ pos }) {
         <octahedronGeometry args={[0.45]} />
         <meshStandardMaterial color="#f5c542" emissive="#c89020" emissiveIntensity={0.6} />
       </mesh>
+      {/* downward light shaft: thin at the sky, wide where it lands */}
       <mesh position={beamPos} quaternion={beamQuat}>
-        <cylinderGeometry args={[0.3, 0.55, BEAM_HEIGHT, 16, 1, true]} />
-        <meshBasicMaterial color="#ffd875" transparent opacity={0.28} depthWrite={false} side={THREE.DoubleSide} />
+        <cylinderGeometry args={[0.25, 1.45, BEAM_TOP, 16, 1, true]} />
+        <meshBasicMaterial
+          color="#ffd875" transparent opacity={0.18} depthWrite={false}
+          blending={THREE.AdditiveBlending} side={THREE.DoubleSide}
+        />
+      </mesh>
+      {/* the pool of light on the ground — the actual "go here" spot */}
+      <mesh ref={pool} position={poolPos} quaternion={poolQuat}>
+        <circleGeometry args={[1.9, 24]} />
+        <meshBasicMaterial
+          map={POOL_TEX} color="#ffd875" transparent opacity={0.85}
+          depthWrite={false} blending={THREE.AdditiveBlending}
+        />
       </mesh>
     </>
   )

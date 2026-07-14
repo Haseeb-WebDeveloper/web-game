@@ -13,7 +13,7 @@ THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree
 THREE.Mesh.prototype.raycast = acceleratedRaycast
 
 // One shared URL so every component (World, Lanterns) hits the same GLTF cache
-export const PLANET_URL = '/planet.glb?v=29'
+export const PLANET_URL = '/planet.glb?v=30'
 
 // 3-step toon gradient — the reference game's entire lighting model in a few bytes
 export const TOON_GRADIENT = (() => {
