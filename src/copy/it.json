@@ -1,0 +1,201 @@
+{
+  "ui": {
+    "checklist": "Consegne",
+    "objectiveReturn": " — torna a consegnare",
+    "talk": "Premi E per parlare",
+    "deliver": "Premi E per consegnare {perfume}",
+    "continue": "clicca o premi Spazio ▸",
+    "cta": "Scopri il profumo →",
+    "delivered": "consegnato.",
+    "top": "testa",
+    "heart": "cuore",
+    "base": "fondo",
+    "controls": "WASD per camminare · Shift per correre · trascina per guardare · E per interagire",
+    "ctrlWalk": "cammina",
+    "ctrlRun": "corri",
+    "ctrlLook": "guarda",
+    "ctrlInteract": "interagisci",
+    "diaryTitle": "Diario olfattivo",
+    "diaryHint": "Raccogli tutte le note di un profumo prima di consegnarlo…",
+    "noteToast": "{icon} {label} — aggiunta al tuo diario olfattivo",
+    "eggToast": "🍾 Una lettera per Venezia, affidata al mare.",
+    "messaggera": "La Messaggera",
+    "endingQuestion1": "E il tuo momento perfetto,",
+    "endingQuestion2": "che profumo ha?",
+    "endingQuestionSub": "",
+    "endingTitle": "Ogni momento, consegnato.",
+    "saveCard": "↓ salva la tua Roma",
+    "creatingCard": "sto creando la tua cartolina…",
+    "recLabel": "il tuo momento perfetto profuma di",
+    "newsPlaceholder": "la tua email…",
+    "newsButton": "Restiamo in contatto",
+    "newsThanks": "Grazie. A presto, Messaggera. 🤍",
+    "backToRome": "← torna a Roma",
+    "shareTitle": "ROMA IN UN RESPIRO",
+    "shareStats": "5/5 consegne · {n}/12 note raccolte",
+    "shareQuestion1": "E il tuo momento perfetto,",
+    "shareQuestion2": "che profumo ha?",
+    "goTo": "➜ {name}",
+    "returnTo": "⮐ torna da {name}",
+    "looks": ["Classica", "Aurea", "Notte"],
+    "lookUnlocked": "👗 Nuovo look sbloccato: {name}",
+    "introTitle": "Roma in un respiro",
+    "introHint": "scorri per avvicinarti",
+    "vaporize": "VAPORIZE",
+    "skip": "salta →"
+  },
+  "cards": {
+    "morning": {
+      "story": "Il controcanto maschile di Roma — il profumo di un mattino che finalmente prende forma. Dal 1992.",
+      "notes": { "top": ["bergamotto", "pompelmo"], "heart": ["lavanda", "cardamomo"], "base": ["cedro", "muschio"] }
+    },
+    "verse": {
+      "story": "Un classico senza tempo della profumeria femminile, nel suo iconico flacone a colonna. Dal 1988.",
+      "notes": { "top": ["bergamotto di Sicilia", "ribes nero"], "heart": ["gelsomino", "mughetto"], "base": ["ambra", "sandalo"] }
+    },
+    "flowers": {
+      "story": "Roma, in fiori bianchi — quelli timidi, che si aprono solo dopo il tramonto.",
+      "notes": { "top": ["neroli", "pera"], "heart": ["gelsomino", "fiori d’arancio"], "base": ["muschio bianco", "vaniglia"] }
+    },
+    "knot": {
+      "story": "Un nodo d’infinito sul flacone, e uno su due cuori accanto a una fontana.",
+      "notes": { "top": ["mandarino", "pepe rosa"], "heart": ["rosa", "peonia"], "base": ["patchouli", "legno d’ambra"] }
+    },
+    "springs": {
+      "story": "Le Acque Romane — Ambrosia Aurea, Divinum Ficus, Uva Dulcis, Rubus Maris. Un nuovo capitolo, scritto dalla nuova generazione.",
+      "notes": { "top": ["camomilla romana", "fico"], "heart": ["uva", "rosa dell’Aventino"], "base": ["alloro", "legni di cachemire"] }
+    }
+  },
+  "quests": {
+    "morning": {
+      "title": "L’edizione del mattino",
+      "arrow": "il bar dell’espresso",
+      "giver": "Il Giornalaio — il padrone dell’edicola",
+      "intro": [
+        "Ah, la Messaggera! Sei in anticipo oggi.",
+        "Il mio espresso si è freddato… un mattino senza caffè non ha forma.",
+        "Me ne prendi uno dal bar dall’altra parte della piazza? Attenta ai piccioni."
+      ],
+      "outro": [
+        "Ancora caldo! Sei un angelo.",
+        "Ora il mattino può cominciare. Grazie, Messaggera."
+      ],
+      "objective": "Prendi un espresso al bar dall’altra parte della piazza",
+      "carry": "☕ un espresso bollente",
+      "prompts": ["Premi E per prendere l’espresso"],
+      "bloom": "La luce del mattino inonda la piazza. La città inspira."
+    },
+    "verse": {
+      "title": "Amarsi, in versi",
+      "arrow": "una pagina volata via",
+      "giver": "La Poetessa — tra i panni stesi",
+      "intro": [
+        "Il vento! La mia poesia — tre pagine, volate sui tetti.",
+        "È una poesia a me stessa. Non ne avevo mai scritta una così.",
+        "L’ultimo verso non voleva venire… forse è volato via con le pagine. Le ritrovi per me?"
+      ],
+      "outro": [
+        "Una… due… tre. Tutte, di nuovo tra le mie mani.",
+        "Ed ecco — l’ultimo verso mi stava aspettando da sempre:",
+        "«Volersi bene è l’inizio della felicità.»"
+      ],
+      "objective": "Ritrova le 3 pagine del manoscritto rubate dal vento",
+      "carry": "📄 pagine del manoscritto",
+      "prompts": ["Premi E per afferrare la pagina", "Premi E per afferrare la pagina", "Premi E per afferrare la pagina"],
+      "bloom": "«Volersi bene è l’inizio della felicità.» — la sua poesia, finalmente finita."
+    },
+    "flowers": {
+      "title": "Fiori bianchi, dopo il tramonto",
+      "arrow": "una lanterna",
+      "giver": "La Fioraia",
+      "intro": [
+        "Stasera ho una cena sulla mia terrazza — e il mio gelsomino si rifiuta di aprirsi.",
+        "I fiori bianchi sono timidi. Aspettano il buio per donare il loro profumo.",
+        "Accendi le quattro lanterne per me. Convinciamo la sera ad arrivare in anticipo."
+      ],
+      "outro": [
+        "Guardali… il gelsomino non ha resistito alla luce delle lanterne.",
+        "Lo senti? Questo è il profumo della pazienza."
+      ],
+      "objective": "Accendi le quattro lanterne sulla terrazza",
+      "prompts": ["Premi E per accendere la lanterna", "Premi E per accendere la lanterna", "Premi E per accendere la lanterna", "Premi E per accendere la lanterna"],
+      "bloom": "Scende il crepuscolo. Uno a uno, i fiori bianchi si aprono."
+    },
+    "knot": {
+      "title": "Il nodo",
+      "arrow": "la Signora, alla fontana",
+      "giver": "Il Signore — imbronciato sulla panchina",
+      "intro": [
+        "Cinquantun anni di matrimonio, e lei fa finta che i gatti siano una compagnia migliore.",
+        "Abbiamo litigato. Per niente. Per tutto. Sai com’è — no, sei giovane, non lo sai.",
+        "Portale questo biglietto. Io non ho il coraggio di attraversare la piazza."
+      ],
+      "outro": [
+        "…Ha detto così? Davvero ha detto così?",
+        "Ah! Cinquantun anni, e ancora mi fa saltare il cuore. Vai, guardaci fare pace."
+      ],
+      "objective": "Porta il biglietto a lei, vicino alla fontana",
+      "carry": "💌 un biglietto piegato",
+      "targetName": "La Signora — che dà da mangiare ai gatti",
+      "prompts": ["Premi E per consegnarle il biglietto"],
+      "midLines": [
+        "Un biglietto? Da quel vecchio testardo? …Leggimelo, gli occhiali sono a casa.",
+        "«Perdona un vecchio sciocco che ti ama da prima che la fontana avesse l’acqua.»",
+        "…Mah. Beh. Ha sempre scritto meglio di come litigava."
+      ],
+      "choicePrompt": "Ti chiede: cosa gli rispondo?",
+      "choiceOptions": [
+        "«Vieni a sederti con me, vecchio sciocco.»",
+        "«Sei perdonato — ma dai tu da mangiare ai gatti per un mese.»"
+      ],
+      "bloom": "I getti della fontana si intrecciano in un nodo senza fine. ∞"
+    },
+    "springs": {
+      "title": "Le tre sorgenti dell’Aventino",
+      "arrow": "una sorgente di marmo",
+      "giver": "Il Giardiniere",
+      "intro": [
+        "Tre sorgenti di marmo, secche come agosto. Non cantano da anni.",
+        "Dicono che ognuna si svegli per un’essenza diversa — giardino, frutteto, vigna.",
+        "Va’ da loro. Posa le mani sul marmo. Forse canteranno per una messaggera."
+      ],
+      "outro": [
+        "Ascolta… tutte e tre, cantano insieme. Non pensavo le avrei mai più sentite.",
+        "Verde, ambra, rubino — le acque antiche, e un nuovo capitolo da scriverci dentro."
+      ],
+      "objective": "Risveglia le tre sorgenti di marmo",
+      "prompts": ["Premi E per risvegliare la sorgente", "Premi E per risvegliare la sorgente", "Premi E per risvegliare la sorgente"],
+      "bloom": "Le sorgenti scorrono verde, ambra e rubino. Un nuovo capitolo, scritto dalla nuova generazione."
+    }
+  },
+  "notes": {
+    "bergamot": "bergamotto",
+    "cardamom": "cardamomo",
+    "blackcurrant": "ribes nero",
+    "lily": "mughetto",
+    "neroli": "neroli",
+    "orangeblossom": "fiori d’arancio",
+    "pinkpepper": "pepe rosa",
+    "rose": "rosa",
+    "chamomile": "camomilla romana",
+    "fig": "fico",
+    "grape": "uva dolce",
+    "laurel": "alloro"
+  },
+  "egg": {
+    "prompt": "Premi E — c’è un’altra busta nella tua borsa…",
+    "lines": [
+      "Un’altra busta. Non è sulla lista. L’indirizzo dice soltanto… Venezia.",
+      "Nessun ponte arriva a Venezia, oggi. Forse nessun ponte c’è mai arrivato.",
+      "(Infila la lettera in una bottiglia vuota, la sigilla, e lascia che l’acqua la porti via.)",
+      "«Fuori produzione, non fuori dal cuore. Un giorno, chissà.»"
+    ]
+  },
+  "bonus": {
+    "morning": "E porti bergamotto nella borsa… sapevi già di cosa aveva bisogno il mio mattino.",
+    "verse": "Profumi di ribes e mughetto — hai letto la mia poesia prima che la finissi.",
+    "flowers": "Neroli e fiori d’arancio, sulle tue mani. Il gelsomino si è fidato subito di te.",
+    "knot": "Rosa e pepe rosa — l’esatto profumo del nostro primo ballo, 1974.",
+    "springs": "Camomilla, fico, uva, alloro… hai raccolto tutto il giardino. Le sorgenti sapevano il tuo nome."
+  }
+}

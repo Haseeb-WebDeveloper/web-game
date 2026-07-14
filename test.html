@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Character isolation test</title>
+  <style>
+    body { margin: 0; font-family: monospace; }
+    #verdict { position: fixed; top: 10px; left: 10px; right: 10px; font-size: 22px; font-weight: bold;
+               background: rgba(0,0,0,0.8); color: #fff; padding: 12px; z-index: 10; }
+    #log { position: fixed; bottom: 0; left: 0; right: 0; max-height: 40vh; overflow: auto;
+           background: rgba(0,0,0,0.8); color: #0f0; font-size: 12px; padding: 8px; white-space: pre-wrap; z-index: 10; }
+  </style>
+</head>
+<body>
+  <div id="verdict">loading…</div>
+  <div id="log"></div>
+  <script type="module">
+    import * as THREE from 'three'
+    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+    import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+
+    const log = (t) => { document.getElementById('log').textContent += t + '\n' }
+    const warn = console.warn.bind(console), err = console.error.bind(console)
+    console.warn = (...a) => { log('WARN: ' + a.join(' ')); warn(...a) }
+    console.error = (...a) => { log('ERR: ' + a.join(' ')); err(...a) }
+
+    const scene = new THREE.Scene()
+    scene.background = new THREE.Color(0x39445a)
+    const cam = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 100)
+    cam.position.set(0, 1.4, 3.2)
+    cam.lookAt(0, 1, 0)
+    const renderer = new THREE.WebGLRenderer({ antialias: true })
+    renderer.setSize(innerWidth, innerHeight)
+    document.body.appendChild(renderer.domElement)
+    const controls = new OrbitControls(cam, renderer.domElement)
+    controls.target.set(0, 1, 0)
+    controls.update()
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.4))
+    const dir = new THREE.DirectionalLight(0xffffff, 2.2)
+    dir.position.set(3, 5, 2)
+    scene.add(dir)
+    scene.add(new THREE.GridHelper(6, 12))
+
+    new GLTFLoader().load('/messaggera.glb?v=4', (gltf) => {
+      scene.add(gltf.scene)
+      log('clips: ' + gltf.animations.map(a => `${a.name}(${a.duration.toFixed(1)}s, ${a.tracks.length} tracks)`).join('  '))
+
+      const idle = gltf.animations.find(a => a.name === 'Idle')
+
+      // 1) Do the animation tracks resolve to real nodes in this scene?
+      let ok = 0; const missing = []
+      for (const tr of idle.tracks) {
+        const nodeName = tr.name.slice(0, tr.name.lastIndexOf('.'))
+        const found = THREE.PropertyBinding.findNode(gltf.scene, nodeName)
+        if (found) ok++; else missing.push(nodeName)
+      }
+      log(`Idle bindings: resolved=${ok}/${idle.tracks.length}` + (missing.length ? ` MISSING sample: ${missing.slice(0,3).join(', ')}` : ''))
+
+      // 2) Play and measure an arm bone over one second
+      const mixer = new THREE.AnimationMixer(gltf.scene)
+      mixer.clipAction(idle).play()
+      let arm = null
+      gltf.scene.traverse(o => { if (o.isBone && /LeftArm/i.test(o.name)) arm = arm || o })
+      log('arm bone found: ' + (arm ? arm.name : 'NO'))
+      const q0 = arm.quaternion.clone()
+      mixer.update(1.0)
+      const q1 = arm.quaternion.clone()
+      log('arm quat t=0: ' + q0.toArray().map(v => v.toFixed(3)).join(', '))
+      log('arm quat t=1: ' + q1.toArray().map(v => v.toFixed(3)).join(', '))
+      const moving = q0.angleTo(q1) > 0.001
+      document.getElementById('verdict').textContent = moving
+        ? '✅ ANIMATES in plain three.js → bug was in the game layer (fix already applied — check the game)'
+        : '❌ FROZEN even in plain three.js → the export itself is broken'
+      document.getElementById('verdict').style.background = moving ? '#14532d' : '#7f1d1d'
+
+      // animation switcher buttons
+      const bar = document.createElement('div')
+      bar.style.cssText = 'position:fixed;top:60px;left:10px;z-index:10;display:flex;gap:6px'
+      let current = mixer.clipAction(idle)
+      for (const clip of gltf.animations) {
+        const b = document.createElement('button')
+        b.textContent = clip.name
+        b.style.cssText = 'padding:6px 12px;cursor:pointer'
+        b.onclick = () => {
+          const next = mixer.clipAction(clip)
+          current.fadeOut(0.25); next.reset().fadeIn(0.25).play(); current = next
+        }
+        bar.appendChild(b)
+      }
+      document.body.appendChild(bar)
+
+      const clock = new THREE.Clock()
+      renderer.setAnimationLoop(() => { controls.update(); mixer.update(clock.getDelta()); renderer.render(scene, cam) })
+    }, undefined, (e) => { document.getElementById('verdict').textContent = 'LOAD ERROR'; log(String(e)) })
+  </script>
+</body>
+</html>

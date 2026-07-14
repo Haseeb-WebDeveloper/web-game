@@ -1,0 +1,201 @@
+{
+  "ui": {
+    "checklist": "Deliveries",
+    "objectiveReturn": " — return to deliver",
+    "talk": "Press E to talk",
+    "deliver": "Press E to deliver {perfume}",
+    "continue": "click or press Space ▸",
+    "cta": "Discover the fragrance →",
+    "delivered": "delivered.",
+    "top": "top",
+    "heart": "heart",
+    "base": "base",
+    "controls": "WASD to walk · Shift to run · drag to look · E to interact",
+    "ctrlWalk": "walk",
+    "ctrlRun": "run",
+    "ctrlLook": "look",
+    "ctrlInteract": "interact",
+    "diaryTitle": "Olfactory diary",
+    "diaryHint": "Collect a perfume’s full set before delivering it…",
+    "noteToast": "{icon} {label} — added to your olfactory diary",
+    "eggToast": "🍾 A letter for Venezia, gone to sea.",
+    "messaggera": "La Messaggera",
+    "endingQuestion1": "E il tuo momento perfetto,",
+    "endingQuestion2": "che profumo ha?",
+    "endingQuestionSub": "And your perfect moment — what does it smell like?",
+    "endingTitle": "Every moment, delivered.",
+    "saveCard": "↓ save your Rome",
+    "creatingCard": "creating your card…",
+    "recLabel": "your perfect moment smells like",
+    "newsPlaceholder": "your email…",
+    "newsButton": "Keep in touch",
+    "newsThanks": "Grazie. A presto, Messaggera. 🤍",
+    "backToRome": "← back to Rome",
+    "shareTitle": "ROMA IN UN RESPIRO",
+    "shareStats": "5/5 deliveries · {n}/12 notes collected",
+    "shareQuestion1": "E il tuo momento perfetto,",
+    "shareQuestion2": "che profumo ha?",
+    "goTo": "➜ {name}",
+    "returnTo": "⮐ back to {name}",
+    "looks": ["Classica", "Aurea", "Notte"],
+    "lookUnlocked": "👗 New look unlocked: {name}",
+    "introTitle": "Roma in un respiro",
+    "introHint": "scroll to come closer",
+    "vaporize": "VAPORIZE",
+    "skip": "skip →"
+  },
+  "cards": {
+    "morning": {
+      "story": "The male counterpart to Roma — the scent of a morning that finally has shape. Since 1992.",
+      "notes": { "top": ["bergamot", "grapefruit"], "heart": ["lavender", "cardamom"], "base": ["cedar", "musk"] }
+    },
+    "verse": {
+      "story": "A timeless classic of feminine perfumery, in its iconic column-shaped bottle. Since 1988.",
+      "notes": { "top": ["sicilian bergamot", "blackcurrant"], "heart": ["jasmine", "lily of the valley"], "base": ["amber", "sandalwood"] }
+    },
+    "flowers": {
+      "story": "Rome, in white flowers — the shy ones, that open only after dark.",
+      "notes": { "top": ["neroli", "pear"], "heart": ["jasmine", "orange blossom"], "base": ["white musk", "vanilla"] }
+    },
+    "knot": {
+      "story": "An infinity knot on the bottle, and one on two hearts by a fountain.",
+      "notes": { "top": ["mandarin", "pink pepper"], "heart": ["rose", "peony"], "base": ["patchouli", "amber wood"] }
+    },
+    "springs": {
+      "story": "The Roman Waters — Ambrosia Aurea, Divinum Ficus, Uva Dulcis, Rubus Maris. A new chapter, written by the next generation.",
+      "notes": { "top": ["roman chamomile", "fig"], "heart": ["grape", "aventine rose"], "base": ["laurel", "cashmere woods"] }
+    }
+  },
+  "quests": {
+    "morning": {
+      "title": "The morning edition",
+      "arrow": "the espresso bar",
+      "giver": "Il Giornalaio — the kiosk owner",
+      "intro": [
+        "Ah, la Messaggera! You’re early today.",
+        "My espresso has gone cold… a morning without coffee has no shape.",
+        "Fetch me one from the bar across the square? Mind the pigeons."
+      ],
+      "outro": [
+        "Ancora caldo — still warm! You’re an angel.",
+        "Now the morning can begin. Grazie, Messaggera."
+      ],
+      "objective": "Fetch an espresso from the bar across the square",
+      "carry": "☕ one hot espresso",
+      "prompts": ["Press E to take the espresso"],
+      "bloom": "Morning light floods the square. The city inhales."
+    },
+    "verse": {
+      "title": "Self-love, in verse",
+      "arrow": "a flown page",
+      "giver": "La Poetessa — among the laundry lines",
+      "intro": [
+        "The wind! My poem — three pages, blown across the rooftops.",
+        "It is a poem to myself. I have never written one of those before.",
+        "The last line would not come… perhaps it flew away with the pages. Find them for me?"
+      ],
+      "outro": [
+        "One… two… three. All of it, back in my hands.",
+        "And there — the last line was waiting for me all along:",
+        "“Loving yourself is where happiness begins.”"
+      ],
+      "objective": "Find the 3 manuscript pages the wind stole",
+      "carry": "📄 manuscript pages",
+      "prompts": ["Press E to catch the page", "Press E to catch the page", "Press E to catch the page"],
+      "bloom": "“Loving yourself is where happiness begins.” — her poem, finished at last."
+    },
+    "flowers": {
+      "title": "White flowers, after dark",
+      "arrow": "a lantern",
+      "giver": "La Fioraia — the florist",
+      "intro": [
+        "Tonight I host a dinner on my terrace — and my jasmine refuses to open.",
+        "White flowers are shy. They wait for the dark to give their perfume.",
+        "Light the four lanterns for me. Let’s convince the evening to come early."
+      ],
+      "outro": [
+        "Look at them… the jasmine could not resist the lantern light.",
+        "Smell that? That is what patience smells like."
+      ],
+      "objective": "Light the four lanterns on the terrace",
+      "prompts": ["Press E to light the lantern", "Press E to light the lantern", "Press E to light the lantern", "Press E to light the lantern"],
+      "bloom": "Dusk settles. One by one, the white flowers open."
+    },
+    "knot": {
+      "title": "The knot",
+      "arrow": "la Signora, by the fountain",
+      "giver": "Il Signore — sulking on the bench",
+      "intro": [
+        "Fifty-one years married, and she pretends the cats are better company.",
+        "We argued. About nothing. About everything. You know how it is — no, you’re young, you don’t.",
+        "Take her this note. I haven’t the courage to cross the square myself."
+      ],
+      "outro": [
+        "…She said that? She really said that?",
+        "Ha! Fifty-one years, and she can still make my heart jump. Go on, watch us make up."
+      ],
+      "objective": "Carry the note to her, by the fountain",
+      "carry": "💌 a folded note",
+      "targetName": "La Signora — feeding the cats",
+      "prompts": ["Press E to hand her the note"],
+      "midLines": [
+        "A note? From that stubborn old man? …Read it to me, my glasses are at home.",
+        "“Forgive an old fool who has loved you since before the fountain had water.”",
+        "…Hmph. Well. He always did write better than he argued."
+      ],
+      "choicePrompt": "She asks you: what should I reply?",
+      "choiceOptions": [
+        "“Come sit with me, you old fool.”",
+        "“You are forgiven — but you’re feeding the cats for a month.”"
+      ],
+      "bloom": "The fountain’s jets braid themselves into an endless knot. ∞"
+    },
+    "springs": {
+      "title": "The three springs of the Aventine",
+      "arrow": "a marble spring",
+      "giver": "Il Giardiniere — the gardener",
+      "intro": [
+        "Three marble springs, dry as August. They have not sung in years.",
+        "They say each one wakes for a different essence — garden, orchard, vine.",
+        "Go to them. Lay your hands on the marble. Perhaps they will sing for a messenger."
+      ],
+      "outro": [
+        "Listen… all three, singing together. I never thought I would hear it again.",
+        "Green, amber, ruby — the old waters, and a new chapter to write in them."
+      ],
+      "objective": "Awaken the three marble springs",
+      "prompts": ["Press E to awaken the spring", "Press E to awaken the spring", "Press E to awaken the spring"],
+      "bloom": "The springs run green, amber and ruby. A new chapter, written by the next generation."
+    }
+  },
+  "notes": {
+    "bergamot": "bergamot",
+    "cardamom": "cardamom",
+    "blackcurrant": "blackcurrant",
+    "lily": "lily of the valley",
+    "neroli": "neroli",
+    "orangeblossom": "orange blossom",
+    "pinkpepper": "pink pepper",
+    "rose": "rose",
+    "chamomile": "roman chamomile",
+    "fig": "fig",
+    "grape": "sweet grape",
+    "laurel": "laurel"
+  },
+  "egg": {
+    "prompt": "Press E — there is one more envelope in your bag…",
+    "lines": [
+      "One more envelope. It isn’t on the checklist. The address says only… Venezia.",
+      "No bridge reaches Venezia today. Maybe no bridge ever did.",
+      "(She slips the letter into an empty bottle, seals it, and lets the water take it.)",
+      "“Fuori produzione, non fuori dal cuore. Un giorno, chissà.”"
+    ]
+  },
+  "bonus": {
+    "morning": "And you carry bergamot in your bag… you already knew what my morning needed.",
+    "verse": "You smell of blackcurrant and lily — you read my poem before I finished it.",
+    "flowers": "Neroli and orange blossom, on your hands. The jasmine trusted you at once.",
+    "knot": "Rose and pink pepper — the exact scent of our first dance, 1974.",
+    "springs": "Chamomile, fig, grape, laurel… you gathered the whole garden. The springs knew your name."
+  }
+}
