@@ -20,6 +20,9 @@ let state = {
 
 // Scroll progress 0..1, written by IntroOverlay, read per-frame by IntroCamera
 export const introProgress = { v: 0 }
+// Set to performance.now() the moment the loader starts fading out — drives
+// the boot reveal (globe zooming in from small, title/scroll sliding in).
+export const bootSignal = { at: 0 }
 
 export function startDive() {
   if (state.intro !== 'scroll') return

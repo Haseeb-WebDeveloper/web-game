@@ -2,7 +2,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { PLANET_R, latLon } from './planet.js'
-import { questStore, introProgress, useQuest } from './questStore.js'
+import { questStore, introProgress, bootSignal, useQuest } from './questStore.js'
 
 import { spawnGround } from './Player.jsx'
 
@@ -45,8 +45,17 @@ export default function IntroCamera() {
       // Start far out (small globe) and swing around while zooming in, ending
       // hovering directly ABOVE the spawn square — the dive is then a descent.
       const p = introProgress.v
+      // Boot reveal: while the loader fades, ease in from way out so the globe
+      // grows from small to its start size (ease-out cubic over ~1.8s).
+      let grow = 1
+      if (bootSignal.at) {
+        const b = Math.min(1, (performance.now() - bootSignal.at) / 1800)
+        grow = 1 - Math.pow(1 - b, 3)
+      } else {
+        grow = 0 // loader still fully covering the screen — hold far out
+      }
       const dir = latLon(SPAWN_LAT - 21 * (1 - p), SPAWN_LON - 130 * (1 - p), 1)
-      const pos = dir.multiplyScalar(PLANET_R + 170 - 80 * p)
+      const pos = dir.multiplyScalar(PLANET_R + 170 - 80 * p + 300 * (1 - grow))
       camera.position.lerp(pos, 1 - Math.exp(-8 * dt))
       camera.up.set(0, 1, 0)
       lookAt.current.set(0, 0, 0)   // pinned to planet center; seeds the dive
