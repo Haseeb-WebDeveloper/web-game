@@ -48,7 +48,7 @@ export function footstep(run = false) {
   f.frequency.value = run ? 950 : 620
   const g = ctx.createGain()
   const t = ctx.currentTime
-  g.gain.setValueAtTime(run ? 0.3 : 0.18, t)
+  g.gain.setValueAtTime(run ? 0.08 : 0.09, t)
   g.gain.exponentialRampToValueAtTime(0.001, t + 0.09)
   src.connect(f); f.connect(g); g.connect(master)
   src.start(t); src.stop(t + 0.1)

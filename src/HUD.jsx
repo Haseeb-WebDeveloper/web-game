@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useQuest, advance, dialogueQuestId, isDialogueActive, dismissCard, getOutroLines, endEnding, unlockedLooks, cycleLook } from './questStore.js'
+import { useQuest, advance, dialogueQuestId, isDialogueActive, dismissCard, getOutroLines, endEnding, cycleLook } from './questStore.js'
 import { QUESTS, QUEST_INDEX, CARDS, NOTES, EGG } from './questData.js'
+import { OUTFITS } from './outfits.js'
 import { setMuted, isMuted, initAudioOnGesture } from './audio.js'
 import { STR, LANG, fill, switchLang } from './i18n.js'
 
@@ -302,12 +303,11 @@ export default function HUD() {
         </svg>
         <span className="diary-count">{st.collected.length}/{NOTES.length}</span>
       </button>
-      {/* wardrobe button disabled until the new character's outfit looks are remade
-      {unlockedLooks() > 0 && (
-        <button className="look-btn" onClick={cycleLook} title="wardrobe">
-          👗 <span className="diary-count">{STR.ui.looks[st.look]}</span>
-        </button>
-      )} */}
+      {/* wardrobe: free outfit picker — tap to cycle the character's look.
+          (v2 gates this behind unlockedLooks(); for now every outfit is available) */}
+      <button className="look-btn" onClick={cycleLook} title="wardrobe">
+        👗 <span className="diary-count">{OUTFITS[st.look]?.label}</span>
+      </button>
 
       {/* pickup toast */}
       {st.toast && <div className="toast">{st.toast}</div>}

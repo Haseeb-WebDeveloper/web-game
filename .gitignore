@@ -13,3 +13,8 @@ npm-debug.log*
 .vscode/
 .idea/
 *.local
+
+# raw Hunyuan exports are >100MB - GitHub rejects them; keep local only
+assets/mixamo/outfit-*.fbx
+!assets/mixamo/*-light.fbx
+!assets/mixamo/*-rigged.fbx

@@ -3,7 +3,8 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { latLon, PLANET_R } from './planet.js'
-import { updateNear, isDialogueActive, collectNear, questStore } from './questStore.js'
+import { updateNear, isDialogueActive, collectNear, questStore, useLook } from './questStore.js'
+import { OUTFITS } from './outfits.js'
 import { toToon } from './World.jsx'
 import { footstep, initAudioOnGesture, pickup } from './audio.js'
 import { touchState } from './TouchControls.jsx'
@@ -46,7 +47,10 @@ export default function Player({ collidersRef }) {
   // The Messaggera — Hunyuan body auto-rigged on Mixamo. Her GLB carries no
   // clips: the original messaggera.glb animations are retargeted onto her
   // skeleton at load (same trick as the NPCs — only the bone prefix differs).
-  const { scene: charScene } = useGLTF('/main-character.glb?v=1')
+  // Which body loads is the player's chosen outfit; all outfits share the
+  // Mixamo skeleton so everything below (retargeting, physics) is identical.
+  const look = useLook()
+  const { scene: charScene } = useGLTF(OUTFITS[look]?.url || OUTFITS[0].url)
   const { animations } = useGLTF('/messaggera.glb?v=5')
   // This rig's bone prefix. three.js strips ':' from node names at load,
   // so 'mixamorig:Hips' arrives as 'mixamorigHips' — prefixes are colon-free.
@@ -96,26 +100,6 @@ export default function Player({ collidersRef }) {
     })
   }, [charScene])
 
-  // Unlockable outfits: swap the body material's diffuse texture
-  const lookRef = useRef({ applied: 0, tex: {} })
-  const applyLook = (look) => {
-    const LOOK_URLS = { 1: '/look-aurea.jpg', 2: '/look-notte.jpg' }
-    charScene.traverse((c) => {
-      if (!c.isMesh || !c.material || !/body/i.test(c.material.name)) return
-      const cache = lookRef.current.tex
-      if (!cache[0]) cache[0] = c.material.map   // remember the original
-      if (look > 0 && !cache[look]) {
-        const t = new THREE.TextureLoader().load(LOOK_URLS[look])
-        t.flipY = false                          // GLTF texture convention
-        t.colorSpace = THREE.SRGBColorSpace
-        t.anisotropy = 8
-        if (cache[0]) { t.wrapS = cache[0].wrapS; t.wrapT = cache[0].wrapT }
-        cache[look] = t
-      }
-      c.material.map = cache[look] || cache[0]
-      c.material.needsUpdate = true
-    })
-  }
 
   const keys = useRef({})
   const state = useMemo(() => ({
@@ -156,6 +140,11 @@ export default function Player({ collidersRef }) {
       q: new THREE.Quaternion(),
     },
   }), [])
+
+  // Swapping outfits builds a fresh mixer + actions (both keyed on charScene).
+  // Clear the tracked anim so the current motion re-applies to the new skeleton —
+  // otherwise `desired === state.anim` short-circuits and she freezes in bind pose.
+  useEffect(() => { state.anim = '' }, [charScene, state])
 
   // Keyboard + mouse-orbit input
   useEffect(() => {
@@ -300,12 +289,6 @@ export default function Player({ collidersRef }) {
   useFrame((_, rawDt) => {
     const dt = Math.min(rawDt, 0.05)
     mixer.update(dt)   // drive the animations directly
-
-    const look = questStore.get().look || 0
-    if (look !== lookRef.current.applied) {
-      lookRef.current.applied = look
-      applyLook(look)
-    }
 
     // During the intro/ending the camera belongs elsewhere; she just stands
     if (questStore.get().ending || questStore.get().intro) {
@@ -608,4 +591,5 @@ export default function Player({ collidersRef }) {
 }
 
 useGLTF.preload('/messaggera.glb?v=5')   // still the animation source
-useGLTF.preload('/main-character.glb?v=1')
+// Preload every outfit so switching in the wardrobe is instant (no Suspense flash)
+for (const o of OUTFITS) useGLTF.preload(o.url)

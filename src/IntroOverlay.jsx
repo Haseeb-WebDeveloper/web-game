@@ -110,7 +110,7 @@ export default function IntroOverlay({ booted }) {
                 </button>
               )}
             </div>
-            <button className="intro-skip" onClick={dive}>{STR.ui.skip}</button>
+            {/* <button className="intro-skip" onClick={dive}>{STR.ui.skip}</button> */}
           </div>
         </div>
       )}

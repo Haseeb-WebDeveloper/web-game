@@ -2,6 +2,7 @@ import { useSyncExternalStore } from 'react'
 import { QUESTS, QUEST_INDEX, NOTES, BONUS_LINES, EGG } from './questData.js'
 import { setMusicDusk } from './audio.js'
 import { STR, fill } from './i18n.js'
+import { OUTFITS } from './outfits.js'
 
 // Per-quest phases: available -> intro -> task -> (mid -> choice)? -> outro -> done
 let state = {
@@ -15,7 +16,7 @@ let state = {
   egg: { phase: 'hidden', line: 0 },   // the Venezia letter: hidden -> talk -> done
   ending: null,        // null -> 'flyover' -> 'panel'
   intro: 'scroll',     // 'scroll' -> 'diving' -> null (playing)
-  look: 0,             // outfit: 0 Classica, 1 Aurea (2 deliveries), 2 Notte (4)
+  look: 0,             // selected outfit = index into OUTFITS (0 = default body)
 }
 
 // Scroll progress 0..1, written by IntroOverlay, read per-frame by IntroCamera
@@ -123,16 +124,9 @@ function finishQuest(quest) {
   // the bloom flash fades into the fragrance card
   setTimeout(() => questStore.set({ bloom: null, card: quest.id }), 4200)
   try { (window.dataLayer = window.dataLayer || []).push({ event: 'quest_complete', quest: quest.id }) } catch {}
-  // outfit unlocks at 2 and 4 deliveries — announce after the bloom settles
-  const done = QUESTS.filter((q) => state.q[q.id].phase === 'done').length
-  if (done === 2 || done === 4) {
-    const name = STR.ui.looks[done === 2 ? 1 : 2]
-    setTimeout(() => {
-      questStore.set({ toast: fill(STR.ui.lookUnlocked, { name }) })
-      setTimeout(() => questStore.set({ toast: null }), 4200)
-      try { window.dataLayer.push({ event: 'look_unlocked', look: name }) } catch {}
-    }, 5400)
-  }
+  // NOTE (v2): outfits will unlock at 2 and 4 deliveries here — announce with a
+  // toast (STR.ui.lookUnlocked) and gate the wardrobe via unlockedLooks(). For now
+  // every outfit is free to pick, so nothing is announced.
 }
 
 // Outfits unlock with deliveries: 2 done -> Aurea, 4 done -> Notte
@@ -141,8 +135,22 @@ export function unlockedLooks() {
   return done >= 4 ? 2 : done >= 2 ? 1 : 0
 }
 
+// Free choice for now: cycle through every outfit. v2 gates this by unlockedLooks()
+// -> `% (unlockedLooks() + 1)` so only earned looks are reachable.
 export function cycleLook() {
-  questStore.set({ look: (state.look + 1) % (unlockedLooks() + 1) })
+  questStore.set({ look: (state.look + 1) % OUTFITS.length })
+}
+
+// Pick an outfit directly (wardrobe menu / future thumbnails)
+export function setLook(i) {
+  const n = OUTFITS.length
+  questStore.set({ look: ((i % n) + n) % n })
+}
+
+// Subscribe to JUST the selected outfit — re-renders only when `look` changes,
+// so heavy consumers (Player) don't re-render on every unrelated store update.
+export function useLook() {
+  return useSyncExternalStore(questStore.subscribe, () => questStore.get().look)
 }
 
 export function dismissCard() {
