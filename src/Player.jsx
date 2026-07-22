@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import { latLon, PLANET_R } from './planet.js'
-import { updateNear, isDialogueActive, collectNear, questStore, useLook } from './questStore.js'
+import { updateNear, isDialogueActive, dialogueFacePos, collectNear, questStore, useLook } from './questStore.js'
 import { OUTFITS } from './outfits.js'
 import { useSharedClips } from './clips.js'
 import { toToon } from './World.jsx'
@@ -470,6 +470,16 @@ export default function Player({ collidersRef }) {
       }
       state.facing.lerp(moveDir, 1 - Math.exp(-9 * dt))
       if (state.facing.lengthSq() < 0.01) state.facing.copy(moveDir)
+    } else if (isDialogueActive()) {
+      // Standing in a conversation: turn to face whoever she's addressing, so
+      // she doesn't hold a dialogue with her back to them. Only while stopped —
+      // walking away mid-line still steers by movement (the `if (wish)` above).
+      const facePos = dialogueFacePos()
+      if (facePos) {
+        const toNpc = facePos.clone().sub(state.pos)
+        toNpc.sub(upNow.clone().multiplyScalar(toNpc.dot(upNow)))   // onto the surface tangent
+        if (toNpc.lengthSq() > 1e-6) state.facing.lerp(toNpc.normalize(), 1 - Math.exp(-8 * dt))
+      }
     }
     state.facing.sub(upNow.clone().multiplyScalar(state.facing.dot(upNow))).normalize()
 

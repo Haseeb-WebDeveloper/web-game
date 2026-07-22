@@ -65,6 +65,19 @@ export function dialogueQuestId() {
   return e ? e[0] : null
 }
 
+// World position of whoever the player is currently talking to, so she can turn
+// to face them. intro/outro happen at the giver; mid/choice at the visited target.
+export function dialogueFacePos() {
+  if (state.egg.phase === 'talk') return EGG.pos
+  const dq = dialogueQuestId()
+  if (!dq) return null
+  const quest = QUEST_INDEX[dq]
+  const s = state.q[dq]
+  if (['intro', 'outro'].includes(s.phase)) return quest.giver.pos
+  if (['mid', 'choice'].includes(s.phase)) return quest.targets[s.midTarget]?.pos ?? null
+  return null
+}
+
 // Which world points currently deserve a beacon (marker + beam + arrow)?
 export function activeBeacons() {
   const out = []
