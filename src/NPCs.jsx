@@ -1,84 +1,32 @@
-import { useMemo, useRef } from 'react'
+import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
-import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import { latLon, PLANET_R } from './planet.js'
 import { questStore } from './questStore.js'
-import { toToon } from './World.jsx'
+import { useHumanBody } from './useHumanBody.js'
+import { useSharedClips } from './clips.js'
+import { snapToGround } from './ground.js'
 
 const P = (lat, lon) => latLon(lat, lon, PLANET_R + 0.5)
 
 // The town's cast — real Mixamo bodies. Their GLBs carry no animations:
 // the Messaggera's clips are retargeted onto each skeleton at load
 // (all Mixamo rigs share bone names, only the 'mixamorigN:' prefix differs).
-// The Signore reuses the giornalaio body with a warm-gray tint.
+// v2 cast: every role now has its own body, so nobody is a tinted copy any more.
+// The nonne are scaled below 1 because the pipeline normalizes everyone to 1.75m.
 const CAST = [
-  { id: 'giornalaio', glb: '/npc-giornalaio.glb?v=1', questId: 'morning', at: 'giver', pos: P(30, 10), look: P(35, 0), scale: 1.0 },
-  { id: 'poetessa', glb: '/npc-poetessa.glb?v=1', questId: 'verse', at: 'giver', pos: P(-35, 45), look: P(-31, 49), scale: 0.99 },
-  { id: 'fioraia', glb: '/npc-fioraia.glb?v=1', questId: 'flowers', at: 'giver', pos: P(42, 170), look: P(39, 173), scale: 1.0 },
-  { id: 'signore', glb: '/npc-giornalaio.glb?v=1', questId: 'knot', at: 'giver', pos: P(33, 94), look: P(36, 77.5), tint: '#d8cfc4', scale: 0.97 },
-  { id: 'signora', glb: '/npc-signora.glb?v=1', questId: 'knot', at: 'target', pos: P(36, 77.5), look: P(33, 94), scale: 0.96 },
-  { id: 'giardiniere', glb: '/npc-giardiniere.glb?v=1', questId: 'springs', at: 'giver', pos: P(-42, 135), look: P(-33, 135), scale: 1.0 },
+  { id: 'giornalaio', glb: '/npc-giornalaio.glb?v=2', questId: 'morning', at: 'giver', pos: P(30, 10), look: P(35, 0), scale: 1.0 },
+  { id: 'poetessa', glb: '/npc-poetessa.glb?v=2', questId: 'verse', at: 'giver', pos: P(-35, 45), look: P(-31, 49), scale: 0.99 },
+  { id: 'fioraia', glb: '/npc-fioraia.glb?v=2', questId: 'flowers', at: 'giver', pos: P(42, 170), look: P(39, 173), scale: 1.0 },
+  { id: 'signore', glb: '/npc-aldo.glb?v=1', questId: 'knot', at: 'giver', pos: P(33, 94), look: P(36, 77.5), scale: 0.94 },
+  { id: 'signora', glb: '/npc-signora.glb?v=2', questId: 'knot', at: 'target', pos: P(36, 77.5), look: P(33, 94), scale: 0.90 },
+  { id: 'giardiniere', glb: '/npc-giardiniere.glb?v=2', questId: 'springs', at: 'giver', pos: P(-42, 135), look: P(-33, 135), scale: 1.0 },
 ]
 
 function NPC({ def, collidersRef, animations }) {
   const group = useRef()
-  const { scene: source } = useGLTF(def.glb)
-
-  // Skinned meshes MUST be cloned with SkeletonUtils so each instance
-  // gets its own bone hierarchy — a plain clone() shares (and breaks) skeletons.
-  const model = useMemo(() => {
-    const c = cloneSkeleton(source)
-    c.traverse((o) => {
-      if (o.isMesh || o.isSkinnedMesh) {
-        o.frustumCulled = false
-        if (o.material) {
-          o.material = o.material.clone()
-          if (def.tint) o.material.color = new THREE.Color(def.tint)
-          o.material.side = THREE.DoubleSide
-          toToon(o)
-        }
-      }
-    })
-    return c
-  }, [source, def])
-
-  // This rig's bone prefix. NOTE: three.js strips ':' from node names at
-  // load, so 'mixamorig:Hips' arrives as 'mixamorigHips' — prefixes here
-  // are 'mixamorig', 'mixamorig2', etc., colon-free.
-  const prefix = useMemo(() => {
-    let p = 'mixamorig'
-    model.traverse((o) => {
-      if (o.isBone && o.name.endsWith('Hips')) p = o.name.slice(0, -4)
-    })
-    return p
-  }, [model])
-
-  // Retarget the Messaggera's clips: swap the bone prefix, drop root motion
-  const clips = useMemo(() => animations.map((clip) => {
-    const c = clip.clone()
-    c.tracks = c.tracks
-      .filter((t) => !/Hips\.position$/i.test(t.name))
-      .map((t) => {
-        const tt = t.clone()
-        tt.name = tt.name.replace(/^mixamorig\d*/, prefix)
-        return tt
-      })
-    return c
-  }), [animations, prefix])
-
-  const mixer = useMemo(() => {
-    const m = new THREE.AnimationMixer(model)
-    m.timeScale = 0.5   // 60fps-scene export vs 30fps clips, same as the player
-    return m
-  }, [model])
-
-  const actions = useMemo(() => {
-    const map = {}
-    for (const clip of clips) map[clip.name] = mixer.clipAction(clip)
-    return map
-  }, [clips, mixer])
+  const { model, mixer, actions } = useHumanBody(def.glb, animations, { tint: def.tint })
 
   const st = useRef({
     grounded: false,
@@ -93,21 +41,10 @@ function NPC({ def, collidersRef, animations }) {
     if (!group.current) return
     const up = def.pos.clone().normalize()
 
-    // Drop onto the actual ground once the collider exists. A building sitting
-    // over the NPC's spot adds roof/floor hits ABOVE the street, so the first
-    // hit can be a roof. The street is always the hit closest to the planet
-    // centre, so we take the lowest-radius hit — this keeps NPCs on the ground
-    // even when a house is directly over them. (firstHitOnly OFF: we need all.)
+    // Drop onto the actual street once the collider exists (see ground.js for
+    // why the topmost hit is the right one on paved ground).
     if (!s.grounded && collidersRef.current) {
-      const rc = new THREE.Raycaster(def.pos.clone().addScaledVector(up, 10), up.clone().negate(), 0, 40)
-      const hits = rc.intersectObject(collidersRef.current, false)
-      if (hits.length) {
-        let ground = hits[0]
-        for (const h of hits) if (h.point.length() < ground.point.length()) ground = h
-        group.current.position.copy(ground.point)
-      } else {
-        group.current.position.copy(def.pos)
-      }
+      group.current.position.copy(snapToGround(def.pos, collidersRef.current))
       s.grounded = true
     }
 
@@ -143,14 +80,11 @@ function NPC({ def, collidersRef, animations }) {
 }
 
 export default function NPCs({ collidersRef }) {
-  const { animations } = useGLTF('/messaggera.glb?v=5')
+  const animations = useSharedClips()
   return CAST.map((def) => (
     <NPC key={def.id} def={def} collidersRef={collidersRef} animations={animations} />
   ))
 }
 
-useGLTF.preload('/npc-giornalaio.glb?v=1')
-useGLTF.preload('/npc-poetessa.glb?v=1')
-useGLTF.preload('/npc-fioraia.glb?v=1')
-useGLTF.preload('/npc-signora.glb?v=1')
-useGLTF.preload('/npc-giardiniere.glb?v=1')
+// derived from CAST so a body swap can't leave a stale preload behind
+for (const d of CAST) useGLTF.preload(d.glb)

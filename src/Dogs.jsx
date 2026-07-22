@@ -5,14 +5,16 @@ import * as THREE from 'three'
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import { latLon, PLANET_R } from './planet.js'
 import { toToon } from './World.jsx'
+import { snapToGround } from './ground.js'
 
 // --- tuning ---
 const DOG_SCALE = 0.26       // native model is ~3 units tall → small street dog
 const MODEL_FWD = 1          // flip to -1 if the dog moon-walks (faces -Z)
 const DOG_LIFT = 0.08        // small lift so the animated paws clear the ground
-const WALK_SPEED = 1.6       // units/sec
-const WANDER_DEG = 7         // how far from home it roams (degrees of arc)
-const PAUSE_MIN = 1.6, PAUSE_MAX = 5.0
+const WALK_SPEED = 2.0       // units/sec
+const WANDER_DEG = 20        // how far from home it roams (degrees of arc)
+const PAUSE_MIN = 0.8, PAUSE_MAX = 3.0
+const MIN_TRIP = 4           // don't pick a spot they're already standing on
 const SURF = PLANET_R + 0.5
 
 // Where the dogs live (lat, lon). One by the fountain (with the cats), one by the kiosk.
@@ -65,22 +67,19 @@ function Dog({ def, collidersRef, source }) {
     s.anim = name
   }
 
-  // drop a point onto the actual street (lowest-radius hit, so roofs don't win)
-  const snapToGround = (pos) => {
-    const up = pos.clone().normalize()
-    const rc = new THREE.Raycaster(pos.clone().addScaledVector(up, 8), up.clone().negate(), 0, 30)
-    const hits = rc.intersectObject(collidersRef.current, false)
-    if (!hits.length) return pos
-    let g = hits[0]
-    for (const h of hits) if (h.point.length() < g.point.length()) g = h
-    return g.point.clone()
+  // keep trying until we get somewhere actually worth walking to
+  const pickTarget = () => {
+    let t = null
+    for (let i = 0; i < 6; i++) {
+      t = latLon(
+        def.home[0] + (Math.random() - 0.5) * 2 * WANDER_DEG,
+        def.home[1] + (Math.random() - 0.5) * 2 * WANDER_DEG,
+        SURF,
+      )
+      if (t.distanceTo(st.current.pos) > MIN_TRIP) return t
+    }
+    return t
   }
-
-  const pickTarget = () => latLon(
-    def.home[0] + (Math.random() - 0.5) * 2 * WANDER_DEG,
-    def.home[1] + (Math.random() - 0.5) * 2 * WANDER_DEG,
-    SURF,
-  )
 
   useFrame((_, dt) => {
     mixer.update(dt)
@@ -89,7 +88,7 @@ function Dog({ def, collidersRef, source }) {
 
     if (!s.grounded) {
       const up0 = s.pos.clone().normalize()
-      s.pos = snapToGround(s.pos)
+      s.pos = snapToGround(s.pos, collidersRef.current)
       s.facing.set(0, 1, 0).cross(up0).normalize()
       s.grounded = true
       play('Idle')
@@ -117,7 +116,7 @@ function Dog({ def, collidersRef, source }) {
           play('Idle')
         } else {
           s.pos.addScaledVector(dir, Math.min(WALK_SPEED * dt, dist))
-          s.pos = snapToGround(s.pos)
+          s.pos = snapToGround(s.pos, collidersRef.current)
           s.facing.lerp(dir, 1 - Math.exp(-8 * dt)).normalize()
           play('Walk')
         }

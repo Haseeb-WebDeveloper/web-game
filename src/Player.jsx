@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import { latLon, PLANET_R } from './planet.js'
 import { updateNear, isDialogueActive, collectNear, questStore, useLook } from './questStore.js'
 import { OUTFITS } from './outfits.js'
+import { useSharedClips } from './clips.js'
 import { toToon } from './World.jsx'
 import { footstep, initAudioOnGesture, pickup } from './audio.js'
 import { touchState } from './TouchControls.jsx'
@@ -51,7 +52,7 @@ export default function Player({ collidersRef }) {
   // Mixamo skeleton so everything below (retargeting, physics) is identical.
   const look = useLook()
   const { scene: charScene } = useGLTF(OUTFITS[look]?.url || OUTFITS[0].url)
-  const { animations } = useGLTF('/messaggera.glb?v=5')
+  const animations = useSharedClips()
   // This rig's bone prefix. three.js strips ':' from node names at load,
   // so 'mixamorig:Hips' arrives as 'mixamorigHips' — prefixes are colon-free.
   const prefix = useMemo(() => {
@@ -590,6 +591,6 @@ export default function Player({ collidersRef }) {
   )
 }
 
-useGLTF.preload('/messaggera.glb?v=5')   // still the animation source
+// the clip sources (messaggera + extra animations) preload from clips.js
 // Preload every outfit so switching in the wardrobe is instant (no Suspense flash)
 for (const o of OUTFITS) useGLTF.preload(o.url)

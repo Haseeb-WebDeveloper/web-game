@@ -16,6 +16,7 @@ import EndingCamera from './EndingCamera.jsx'
 import IntroCamera from './IntroCamera.jsx'
 import IntroOverlay from './IntroOverlay.jsx'
 import NPCs from './NPCs.jsx'
+import AmbientNPCs from './AmbientNPCs.jsx'
 import Dogs from './Dogs.jsx'
 import Cats from './Cats.jsx'
 import Pigeons from './Pigeons.jsx'
@@ -59,6 +60,7 @@ export default function App() {
           <World collidersRef={collidersRef} />
           <Player collidersRef={collidersRef} />
           <NPCs collidersRef={collidersRef} />
+          <AmbientNPCs collidersRef={collidersRef} />
           <Dogs collidersRef={collidersRef} />
           <Cats collidersRef={collidersRef} />
           <Pigeons collidersRef={collidersRef} />

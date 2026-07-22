@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import { latLon, PLANET_R } from './planet.js'
 import { toToon } from './World.jsx'
+import { snapToGround } from './ground.js'
 
 // Cat model: Blend Swap #86110 "Rigged and animated Cat" — CC-BY 3.0.
 // ⚠️ ATTRIBUTION REQUIRED: credit the author in the game credits / README.
@@ -15,8 +16,8 @@ const CAT_SCALE = 0.11       // native model ~9 units → small cat
 const CAT_LIFT = 0.12        // small lift so the animated paws clear the ground
 const MODEL_FWD = 1          // flip to -1 if the cat moon-walks (faces -Z)
 const WALK_SPEED = 1.1       // cats saunter slower than the dog
-const WANDER_DEG = 4         // cats stay close to the signora
-const PAUSE_MIN = 2.0, PAUSE_MAX = 6.5
+const WANDER_DEG = 11        // cats stay close to the signora
+const PAUSE_MIN = 1.0, PAUSE_MAX = 3.5
 const SURF = PLANET_R + 0.5
 
 // Cats live by the signora at the fountain (Scene 4 — "feeding the cats")
@@ -70,16 +71,6 @@ function Cat({ def, collidersRef, source }) {
     if (!m) walk.time = 0   // freeze on a neutral standing frame while paused
   }
 
-  const snapToGround = (pos) => {
-    const up = pos.clone().normalize()
-    const rc = new THREE.Raycaster(pos.clone().addScaledVector(up, 8), up.clone().negate(), 0, 30)
-    const hits = rc.intersectObject(collidersRef.current, false)
-    if (!hits.length) return pos
-    let g = hits[0]
-    for (const h of hits) if (h.point.length() < g.point.length()) g = h
-    return g.point.clone()
-  }
-
   const pickTarget = () => latLon(
     def.home[0] + (Math.random() - 0.5) * 2 * WANDER_DEG,
     def.home[1] + (Math.random() - 0.5) * 2 * WANDER_DEG,
@@ -93,7 +84,7 @@ function Cat({ def, collidersRef, source }) {
 
     if (!s.grounded) {
       const up0 = s.pos.clone().normalize()
-      s.pos = snapToGround(s.pos)
+      s.pos = snapToGround(s.pos, collidersRef.current)
       s.facing.set(0, 1, 0).cross(up0).normalize()
       s.grounded = true
       setMoving(false)
@@ -119,7 +110,7 @@ function Cat({ def, collidersRef, source }) {
           setMoving(false)
         } else {
           s.pos.addScaledVector(dir, Math.min(WALK_SPEED * dt, dist))
-          s.pos = snapToGround(s.pos)
+          s.pos = snapToGround(s.pos, collidersRef.current)
           s.facing.lerp(dir, 1 - Math.exp(-8 * dt)).normalize()
           setMoving(true)
         }
